@@ -1,0 +1,68 @@
+// main: main.less
+
+.header-wrapper {
+    >.container {
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        right: 0;
+    }
+}
+
+.navbar {
+    &.navbar-clear {
+        background-color: fadeout(@white, 80%);
+
+        li {
+            a {
+                color: @white;
+                font-size: 15px;
+                padding: 27px 25px;
+
+                &:hover,
+                &:focus {
+                    background-color: fadeout(@white, 70%);
+                }
+            }
+        }
+
+        .navbar-brand {
+            padding: 0;
+
+            >img {
+                max-height: 75px;
+            }
+        }
+
+        .dropdown {
+
+            &.open {
+                >a {
+                    background-color: fadeout(@white, 70%);
+                    &:hover,
+                    &:focus {
+                        background-color: fadeout(@white, 70%);
+                    }
+                }
+            }
+        }
+
+        .dropdown-menu {
+            background-color: fadeout(@white, 90%);
+            border: 0;
+            border-top: 4px solid @yellow;
+
+            li {
+                a {
+                    padding: 10px 27px;
+
+                    &:hover,
+                    &:focus {
+                        background-color: fadeout(@white, 80%);
+                        background-image: initial;
+                    }
+                }
+            }
+        }
+    }
+}

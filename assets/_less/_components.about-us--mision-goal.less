@@ -1,0 +1,28 @@
+// main: main.less
+
+.mission-goal {
+    background-image: url('/assets/images/mission-goal-bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    .mission-goal-wrap {
+        display: table;
+        width: 100%;
+        padding: 75px 0;
+
+        .mission-goal-content {
+            display: table-cell;
+            text-align: center;
+            width: 50%;
+            padding: @padding-base 50px;
+
+            &:first-of-type {
+                border-right: 3px solid @white;
+            }
+
+            p {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

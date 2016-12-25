@@ -1,0 +1,828 @@
+'use strict';
+
+var https = require('https');
+var http = require('http');
+
+var doc = require('dynamodb-doc');
+var dynamo = new doc.DynamoDB();
+var AWS = require('aws-sdk');
+var dynamoAWS = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+
+const DYNAMODB_QUESTIONSESSION_TABLE = "NOMYBot_QuestionSession";
+const DYNAMODB_ANSWERCACHE_TABLE = "NOMYBot_AnswerCache";
+
+// dev page
+// const PAGE_TOKEN = "EAAOLPZAfZAerkBAN6ODi3pEbfXdpRA0ZCBKk6YRpCek40Fer7uMylhTqoqiV3KZBB43bZA1ROnh7SZB0DnudJKEiQZBqrhZCwXdCUU8pU2nZAjYrSCJPRCdKJ5WpEIZCt1NcFLkXP7EcIJIrEfP9zxjscemgslLdseHBRjpCZBCSPtFCAZDZD";
+// Move.Ph page
+const PAGE_TOKEN = "EAAOLPZAfZAerkBAChdGtPruHBNREpaWtlbUMP0ufPelCbrSdcqlWvnUfX2jS5CTIjlYlE2GdXC0Vd8XaHI2MI1a1g0wQgUvFwKkwdnZAFH5pnBIYHhStS4HBOM7qkgPNoZBGDwzXDHKKzGOvMOasJoQBECZCL5NU7zLfvGsZAZBRgZDZD";
+
+const VERIFY_TOKEN = "nomybot_token";
+
+var Messenger = function(page_token) {
+    this.page_token = page_token;
+    this.string_constants = {
+        "DEFAULT_TEXT": [
+            "Have you availed of any government service recently? Tell us about it. Type \"report\" to start the session.",
+            "Reporting corruption can help you get better government service. Tell us about your experience. Type \"report\" to start the session.",
+            "How did your government transaction go? Type \"report\" to start the session."
+        ],
+        "CANCEL_REPORT": "Cancel report",
+        "CANCEL_REPORT_TIP": "Tip: You can type \"cancel\" anytime to end your report",
+        "INTRO_QUESTION": "Hi ${name}, thanks for reaching out! Are you reporting a good incident or a bad incident? \n\nYou can type \"cancel\" anytime to end your report",
+        "SOMETHING_FAILED": "Something went wrong :( Please be patient while we fix this issue.",
+        "QUESTIONS_LIST_GOOD": {
+            "q1": [
+                "Awesome! What agency was involved?",
+                "We love hearing these stories, what agency was involved?",
+                "Yahooo! Let’s celebrate good, what agency was involved?"
+            ],
+            "q2": "Where did this happen? Note: Include branch and city.",
+            "q3": "When did this happen? Note: Include date (MM-DD-YYYY) and time.",
+            "q4": [
+                "We gotta spread the word on reports like these. Can you tell us more? Note: Include names of people you want to commend so that he/she can be recognized. Please enter entire description in 1 message.",
+                "Stories like these help us encourage better public service. Can you tell us more? Note: Include names of people you want to commend so that he/she can be recognized. Please enter entire description in 1 message.",
+                "We want to encourage better public service with reports like yours. Can you tell us more? Note: Include names of people you want to commend so that he/she can be recognized. Please enter entire description in 1 message."
+            ],
+            "q5": "Do you have any photos or documents to support your story? You can send them after this message.",
+            "q6": "Please let us know how to get in touch with you for follow-ups. What is your email address? And/or Mobile number?",
+            "q7": "Do you want to stay anonymous?",
+            "q8": [
+                "It’s nice to hear good stories about government. Thank you for sharing yours with us.",
+                "We’re here to celebrate good, your story will surely help us encourage better public service. Thank you!",
+                "Keep encouraging good by sharing stories like these. THANK YOU!"
+            ]
+        },
+        "QUESTIONS_LIST_BAD": {
+            "q1": [
+                "Uugh, that must be so frustrating. Can you tell me which agency was involved?",
+                ":-/ <sigh> Can you tell me what office was involved?"
+            ],
+            "q2": "Where did this happen? Note: Include branch and city.",
+            "q3": "When did this happen? Note: Include date (MM-DD-YYYY) and time.",
+            "q4": "Was there money involved?",
+            "q5": "How much did you pay?",
+            "q6": [
+                "Can you describe to us in detail what happened? Note: Include names of people you want to complain about. Please enter entire description in 1 message.",
+                "Can you tell me what happened? The more details the better. Note: Include names of people you want to complain about. Please enter entire description in 1 message.",
+                "For us to build a case, we need details of your experience. Can you tell us more? Note: Include names of people you want to complain about. Please enter entire description in 1 message."
+            ],
+            "q7": "Do you have any photos or documents to support your story? You can send them after this message or just type \"none\".",
+            "q8": "Please let us know how to get in touch with you for follow-ups. What is your email address? And/or Mobile number?",
+            "q9": "Do you want to stay anonymous?",
+            "q10": [
+                "It’s a shame you had to go through this. Thank you for sharing your story with us. Rest assured, we will keep all of your details confidential.",
+                "It’s about time we start speaking out against corruption. Thank you for sharing your story with us. We take privacy seriously, you can be assured these details remain confidential.",
+                "Wow. This has got to stop. And your report definitely brings us a step closer to better governance. Thank you for sharing! We guarantee confidentiality."
+            ]
+        },
+        "REPORTING_STOPPED": "Reporting stopped. Just type in \"report\" or access it from the menu to start.",
+        "CAMPAIGN_LINK_GOODBYE": "Your report has been recorded. Find out more about how #notonmywatch works and help us spread the word at http://ph.rappler.com/campaigns/fight-corruption",
+        "QR_STOP_REPORT": [
+            {
+                "content_type": "text",
+                "title": "Stop report",
+                "payload": "stop_reporting"
+            }
+        ]
+    };
+    this.getRandomNumber = function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    this.getRandomMessage = function(text) {
+
+        if(text instanceof Array) {
+            return text[this.getRandomNumber(0, text.length - 1)];
+        }
+
+        return text;
+    };
+};
+
+Messenger.prototype.getUserProfile = function(rcpt_id, successCallback) {
+
+    var options = {
+        hostname: 'graph.facebook.com',
+        path: '/v2.6/'+rcpt_id+'?access_token=' + this.page_token,
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json'
+        }
+    };
+
+    var fnSuccess = function(d) {
+
+    };
+
+    var fnError = function(err) {
+        console.log(err);
+    };
+
+    var req = https.request(options, function(res) {
+        var output = '';
+        var chat_response = '';
+
+        res.setEncoding('utf8');
+
+        res.on('data', function (chunk) {
+            output += chunk;
+        });
+
+        res.on('end', function() {
+            var obj = JSON.parse(output);
+            console.log("USER DETAILS");
+            console.log(JSON.stringify(obj));
+            successCallback(obj);
+        });
+    });
+
+    req.on('error', fnError);
+    req.end();
+};
+
+Messenger.prototype.processReply = function(sender_id, text, context) {
+
+    if(/^report\b/i.test(text)) {
+        this.handleQuestions(sender_id, 0);
+        this.updateSession(sender_id, 0);
+    } else if (/^help\b/i.test(text)) {
+        this.sendText(sender_id, this.string_constants.DEFAULT_TEXT);
+    } else if (/test_report\b/i.test(text)) {
+        let btnTemplate = [
+            {
+                "type": "postback",
+                "title": "Test Good Report",
+                "payload": "start_good_report"
+            },
+            {
+                "type": "postback",
+                "title": "Test Bad Report",
+                "payload": "start_bad_report"
+            }
+        ];
+
+        this.sendButtonTemplate(sender_id, "test report", btnTemplate);
+    } else if (/^cancel\b/i.test(text)) {
+        this.cancelReport(sender_id);
+    } else {
+        this.checkCurrentSession(sender_id, text);
+    }
+};
+
+Messenger.prototype.processPostback = function(sender_id, payload) {
+
+    var self = this;
+
+    switch (payload) {
+        case 'start_good_report':
+            this.updateSession(sender_id, 0, "good", function(data) {
+                self.checkCurrentSession(sender_id, "Good", 1, "good");
+                self.sendText(sender_id, self.string_constants.CANCEL_REPORT_TIP);
+            });
+            break;
+        case 'start_bad_report':
+            this.updateSession(sender_id, 0, "bad", function(data) {
+                self.checkCurrentSession(sender_id, "Bad", 1, "bad");
+                self.sendText(sender_id, self.string_constants.CANCEL_REPORT_TIP);
+            });
+            break;
+        case 'stop_reporting':
+            this.cancelReport(sender_id);
+            break;
+        case 'good_report':
+            this.checkCurrentSession(sender_id, "Good", 1, "good");
+            break;
+        case 'bad_report':
+            this.checkCurrentSession(sender_id, "Bad", 1, "bad");
+            break;
+        case 'yes_bribe':
+            this.checkCurrentSession(sender_id, "Yes");
+            break;
+        case 'no_bribe':
+            this.checkCurrentSession(sender_id, "No", 2); // skipNext question
+            break;
+        case 'yes_anonymous':
+            this.checkCurrentSession(sender_id, "Yes");
+            break;
+        case 'no_anonymous':
+            this.checkCurrentSession(sender_id, "No");
+            break;
+        case 'intro_message':
+            this.sendText(sender_id, self.string_constants.DEFAULT_TEXT);
+            break;
+        default:
+
+    }
+};
+
+Messenger.prototype.send = function(rcpt_id, params, successCallback, errorCallback) {
+    var options = {
+        hostname: 'graph.facebook.com',
+        path: '/v2.6/me/messages?access_token=' + this.page_token,
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        }
+    };
+
+    var req = https.request(options, function(res) {
+        res.on('data', successCallback);
+    });
+
+    req.on('error', errorCallback);
+
+    req.write(JSON.stringify(params));
+
+    req.end();
+};
+
+Messenger.prototype.sendText = function(receipient_id, text, quick_reply_button) {
+    quick_reply_button = null; // Let's nullify the quick reply button for now as it's bad UX.
+    var randomizedMessage = '';
+
+    if(text instanceof Array) {
+        randomizedMessage = text[this.getRandomNumber(0, text.length - 1)];
+    }
+
+    var params = {
+        recipient: {id: receipient_id},
+        message: {
+            "text": randomizedMessage || text,
+            "quick_replies": quick_reply_button || null
+        },
+    };
+
+    var fnSuccess = function(d) {
+
+    };
+
+    var fnError = function(d) {
+        console.log("error sending text: " + JSON.stringify(d));
+    };
+
+    this.send(receipient_id, params, fnSuccess, fnError);
+
+};
+
+Messenger.prototype.sendButtonTemplate = function(receipient_id, questionText, buttonTemplate) {
+
+
+    var params = {
+        recipient: {id: receipient_id},
+        message: {
+            "attachment": {
+                "type": "template",
+                "payload": {
+                    "template_type": "button",
+                    "text": this.getRandomMessage(questionText),
+                    "buttons": buttonTemplate
+                }
+            }
+        }
+    };
+
+    var fnSuccess = function(d) {
+
+    };
+
+    var fnError = function(d) {
+        console.log("error sending text: " + JSON.stringify(d));
+    };
+
+    this.send(receipient_id, params, fnSuccess, fnError);
+};
+
+Messenger.prototype.handleReports = function(sender_id, question_number, message, successCallback) {
+
+    var params = {
+        "TableName": DYNAMODB_ANSWERCACHE_TABLE,
+        "Item" : {
+            "sender_id": sender_id.toString(),
+            "question_number": question_number,
+            "user_answer": message
+        }
+    };
+
+    dynamo.putItem(params, function(err, data) {
+        if (err) {
+            // Report saving failed
+            console.log("Report for Q:" + question_number + " failed. " + err);
+        } else {
+            // Report Saving done.
+            console.log("Report for Q:" + question_number + " saved.");
+
+            successCallback();
+        }
+    });
+};
+
+Messenger.prototype.cancelReport = function(sender_id) {
+
+    var self = this;
+
+    this.deleteSession(sender_id, function() {
+
+        var params = {
+            "TableName": DYNAMODB_ANSWERCACHE_TABLE,
+            "KeyConditionExpression": "sender_id = :sender_id",
+            "ExpressionAttributeValues": {
+                ":sender_id": sender_id.toString()
+            }
+        };
+
+        docClient.query(params, function(err, data) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                let itemList = data.Items;
+                self.deleteAnswerCache(sender_id, itemList);
+                self.sendText(sender_id, self.string_constants.REPORTING_STOPPED);
+            }
+        });
+
+    });
+}
+
+Messenger.prototype.updateSession = function(sender_id, curr_question_number, report_type, callback) {
+    var ts = new Date().getTime().toString();
+    // this.checkCurrentSession(sender_id);
+
+    dynamo.putItem({
+        "TableName": DYNAMODB_QUESTIONSESSION_TABLE,
+        "Item" : {
+            "sender_id": sender_id.toString(),
+            "question_number": curr_question_number,
+            "report_type": report_type || 'na',
+            "timestamp": ts
+        }
+    }, function(err, data) {
+        if (err) {
+            console.log('SESSION SAVING Failed: ' + err);
+        }
+        else {
+            console.log('Session Saved: ' + sender_id);
+            typeof callback == "function" && callback(data);
+        }
+    });
+};
+
+Messenger.prototype.deleteSession = function(sender_id, callback) {
+    dynamo.deleteItem({
+        "TableName": DYNAMODB_QUESTIONSESSION_TABLE,
+        "Key": {
+            "sender_id": sender_id
+        }
+    }, function(err, data) {
+        if (err) {
+            console.log('Session deleting failed: ' + err);
+        }
+        else {
+            console.log('Session succesfully deleted: ' + sender_id);
+
+            callback();
+        }
+    });
+};
+
+Messenger.prototype.deleteAnswerCache = function(sender_id, objectList) {
+    var deleteList = [];
+
+    for(var i in objectList) {
+        deleteList.push({
+            "DeleteRequest": {
+                "Key": {
+                    "sender_id": {
+                        "S": sender_id.toString()
+                    },
+                    "question_number": {
+                        "N": i.toString()
+                    }
+                }
+            }
+        });
+    }
+
+    dynamoAWS.batchWriteItem({
+        "RequestItems": {
+            "NOMYBot_AnswerCache": deleteList
+        }
+    }, function (err, data) {
+        if (err) {
+            console.log('Session deleting failed: ' + err);
+        }
+        else {
+            console.log('Session succesfully deleted' + JSON.stringify(data));
+        }
+    });
+};
+
+Messenger.prototype.checkCurrentSession = function(sender_id, message, skipValue, report_type) {
+    var self = this;
+
+    var params = {
+        "TableName": DYNAMODB_QUESTIONSESSION_TABLE,
+        "Key" : {
+            "sender_id": sender_id.toString()
+        }
+    };
+
+    dynamo.getItem(params, function(err, data) {
+        if (err) {
+            console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
+        } else {
+            var dynamoItem = data;
+            console.log("GetItem succeeded:", JSON.stringify(dynamoItem));
+
+            // Do next step here. Coz async.
+            if(Object.keys(dynamoItem).length === 0 && dynamoItem.constructor === Object) {
+                // No previous session was detected.
+                // Let's do a normal message processing.
+                console.log("No Sessions found");
+                console.log(Object.keys(dynamoItem).length);
+                console.log(dynamoItem.constructor);
+                console.log('---');
+
+                // context = true, so we know if it's from a followup.
+                // self.processReply(sender_id, message, true);
+            } else {
+                console.log("Previous Session found!");
+
+                // Let's check if user's pressed the Good or Bad button
+                console.log('report type: ' + dynamoItem.Item.report_type);
+                console.log('question number: ' + dynamoItem.Item.question_number);
+
+                if (!report_type && dynamoItem.Item.report_type == 'na' && dynamoItem.Item.question_number === 0) {
+                    // No gaddamn buttons were pressed. Let's force these n00bzz.
+
+                    self.sendText(sender_id, 'Please click one of the buttons from the options above!');
+                    return;
+                }
+
+                // Previous session was found yo!
+                let currReportType = report_type || dynamoItem.Item.report_type;
+                let questionLimit = dynamoItem.Item.report_type == 'bad' ? Object.keys(self.string_constants.QUESTIONS_LIST_BAD).length : Object.keys(self.string_constants.QUESTIONS_LIST_GOOD).length;
+                console.log("question limit: " + questionLimit);
+                var curr_questionNum = dynamoItem.Item.question_number;
+                // Increment Session Count
+                curr_questionNum += skipValue || 1;
+
+                // Correct question number for saving purposes.
+                var report_number = dynamoItem.Item.question_number;
+
+                self.updateSession(sender_id, curr_questionNum, currReportType);
+                console.log("current question number: " + curr_questionNum);
+                if (curr_questionNum > questionLimit - 1) {
+                    console.log('LAST QUESTION');
+                    // We're at the end of the questions!
+
+                    // Save answer to last question
+                    self.handleReports(sender_id, report_number, message, function() {
+
+                        console.log("start saving report");
+                        // send answer cache to save API
+                        self.saveAnswers(sender_id, function(data) {
+
+                            // delete answer cache
+                            console.log("delete answer cache table");
+                            self.deleteAnswerCache(sender_id, data);
+
+                            // delete session
+                            console.log("delete session");
+                            self.deleteSession(sender_id, function() {
+
+                                if(currReportType == 'bad')
+                                    self.sendText(sender_id, self.string_constants.QUESTIONS_LIST_BAD['q10']);
+                                else
+                                    self.sendText(sender_id, self.string_constants.QUESTIONS_LIST_GOOD['q8']);
+
+                                self.sendText(sender_id, self.string_constants.CAMPAIGN_LINK_GOODBYE);
+                            });
+
+                        });
+
+                    });
+
+
+                } else {
+                    // Save response.
+                    self.handleReports(sender_id, report_number, message, function() { });
+
+                    // send next question
+                    self.handleQuestions(sender_id, curr_questionNum, currReportType);
+
+                }
+
+            }
+        }
+    });
+};
+
+Messenger.prototype.handleQuestions = function(sender_id, question_number, report_type) {
+    console.log("handle Questions");
+    var self = this;
+
+    if(question_number === 0) {
+        // first question.
+        let btnTemplate = [
+            {
+                "type": "postback",
+                "title": "Good",
+                "payload": "good_report"
+            },
+            {
+                "type": "postback",
+                "title": "Bad",
+                "payload": "bad_report"
+            },
+            {
+                "type": "postback",
+                "title": this.string_constants.CANCEL_REPORT,
+                "payload": "stop_reporting"
+            }
+        ];
+        this.getUserProfile(sender_id, function(userObj) {
+            self.sendButtonTemplate(sender_id, self.string_constants.INTRO_QUESTION.replace('${name}', userObj.first_name), btnTemplate);
+        });
+    } else if(report_type == 'good') {
+        switch (question_number) {
+            case 7:
+                let btnTemplate = [
+                    {
+                        "type": "postback",
+                        "title": "Yes",
+                        "payload": "yes_anonymous"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "No",
+                        "payload": "no_anonymous"
+                    },
+                    {
+                        "type": "postback",
+                        "title": this.string_constants.CANCEL_REPORT,
+                        "payload": "stop_reporting"
+                    }
+                ];
+
+                this.sendButtonTemplate(sender_id, this.string_constants.QUESTIONS_LIST_GOOD['q'+question_number], btnTemplate);
+                break;
+            default:
+                this.sendText(sender_id, this.string_constants.QUESTIONS_LIST_GOOD['q'+question_number], this.string_constants.QR_STOP_REPORT);
+        }
+    } else if(report_type == 'bad') {
+        let btnTemplate;
+
+        switch (question_number) {
+            case 4:
+                btnTemplate = [
+                    {
+                        "type": "postback",
+                        "title": "Yes",
+                        "payload": "yes_bribe"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "No",
+                        "payload": "no_bribe"
+                    }
+                ];
+
+                this.sendButtonTemplate(sender_id, this.string_constants.QUESTIONS_LIST_BAD['q'+question_number], btnTemplate);
+                break;
+            case 9:
+                btnTemplate = [
+                    {
+                        "type": "postback",
+                        "title": "Yes",
+                        "payload": "yes_anonymous"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "No",
+                        "payload": "no_anonymous"
+                    },
+                    {
+                        "type": "postback",
+                        "title": this.string_constants.CANCEL_REPORT,
+                        "payload": "stop_reporting"
+                    }
+                ];
+
+                this.sendButtonTemplate(sender_id, this.string_constants.QUESTIONS_LIST_BAD['q'+question_number], btnTemplate);
+                break;
+            default:
+                this.sendText(sender_id, this.string_constants.QUESTIONS_LIST_BAD['q'+question_number], this.string_constants.QR_STOP_REPORT);
+        }
+    }
+};
+
+Messenger.prototype.saveAnswers = function(sender_id, successCallback) {
+    var self = this;
+
+    var itemList;
+    // get answer cache items
+    var params = {
+        "TableName": DYNAMODB_ANSWERCACHE_TABLE,
+        "KeyConditionExpression": "sender_id = :sender_id",
+        "ExpressionAttributeValues": {
+            ":sender_id": sender_id.toString()
+        }
+    };
+
+    docClient.query(params, function(err, data) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // Get user info first
+
+            self.getUserProfile(sender_id, function(userObj) {
+
+                itemList = data.Items;
+                var reportType = itemList[0].user_answer;
+
+                console.log("Saved answers found: ", JSON.stringify(itemList));
+
+                var totalCount = data.Count;
+
+                var saveParams = {};
+                var locationName = ""
+                var coords = {
+                    "lat": "",
+                    "long": ""
+                };
+
+                if(itemList[2].user_answer.startsWith("LOC")) {
+                    let temp = itemList[2].user_answer.replace('LOC:', '').split('/');
+
+                    locationName = temp[0];
+                    coords = {
+                        "lat": temp[1],
+                        "long": temp[2]
+                    }
+                } else {
+                    locationName = itemList[2].user_answer;
+                }
+
+                console.log("locationName = " + locationName);
+                console.log("coords = " + JSON.stringify(coords));
+
+                if(reportType.toLowerCase() == 'good') {
+                    saveParams = {
+                        "classification": itemList[0].user_answer,
+                        "agency": itemList[1].user_answer,
+                        "location": locationName,
+                        "money": "",
+                        "description": itemList[4].user_answer,
+                        "date_of_incident": itemList[3].user_answer,
+                        "contact_name": userObj.first_name + " " + userObj.last_name,
+                        "contact_details": itemList[6].user_answer,
+                        "is_anonymous": itemList[7].user_answer,
+                        "sender_id": sender_id,
+                        "fileDocs": [
+                            itemList[5].user_answer,
+                        ],
+                        "coordinates": coords
+                    };
+                } else if (reportType.toLowerCase() == 'bad') {
+                    saveParams = {
+                        "classification": itemList[0].user_answer,
+                        "agency": itemList[1].user_answer,
+                        "location": locationName,
+                        "money": itemList[5].user_answer || "",
+                        "description": itemList[6].user_answer,
+                        "date_of_incident": itemList[3].user_answer,
+                        "contact_name": userObj.first_name + " " + userObj.last_name,
+                        "contact_details": itemList[8].user_answer,
+                        "is_anonymous": itemList[9].user_answer,
+                        "sender_id": sender_id,
+                        "fileDocs": [
+                            itemList[7].user_answer,
+                        ],
+                        "coordinates": coords
+                    };
+                }
+                console.log('==================++++++++++++++++++++++++');
+                console.log(JSON.stringify(saveParams));
+                console.log('==================++++++++++++++++++++++++');
+
+                // do save post.
+                var options = {
+                    hostname: 'ph.rappler.com',
+                    path: '/nomy_admin/fb_bot',
+                    method: 'POST',
+                    headers: {
+                        'authorization': 'Basic bm9teXJhcHBsZXJfYWRtaW46ckBwcGwzck4wbXk=',
+                        'content-type': 'application/json'
+                    }
+                };
+
+                var fnSuccess = function(d) {
+
+                };
+
+                var fnError = function(err) {
+                    console.log('Error saving in DB endpoint: ' + err);
+                    self.sendText(sender_id, this.string_constants.SOMETHING_FAILED);
+                };
+
+                var req = http.request(options, function(res) {
+                    var output = '';
+
+                    res.setEncoding('utf8');
+
+                    res.on('data', function (chunk) {
+                        output += chunk;
+                    });
+
+                    res.on('end', function() {
+                        console.log('Success saving on DB endpoint');
+                        // var obj = JSON.parse(output);
+
+                        // successCallback(obj);
+                    });
+                });
+
+                req.on('error', fnError);
+
+                req.write(JSON.stringify(saveParams));
+                req.end();
+
+                successCallback(itemList);
+            });
+        }
+    });
+};
+
+exports.handler = (event, context, callback) => {
+    // process GET request
+    if(event.params && event.params.querystring) {
+        var queryParams = event.params.querystring;
+
+        var rVerifyToken = queryParams['hub.verify_token'];
+
+        if (rVerifyToken === VERIFY_TOKEN) {
+            var challenge = queryParams['hub.challenge'];
+            callback(null, parseInt(challenge));
+        }else{
+            callback(null, 'Error, wrong validation token');
+        }
+
+        // process POST request
+    } else {
+
+        var messenger = new Messenger(PAGE_TOKEN);
+        var messagingEvents = event.entry[0].messaging;
+        for (var i = 0; i < messagingEvents.length; i++) {
+            var messagingEvent = messagingEvents[i];
+            console.log('messaging event: ' + JSON.stringify(messagingEvent.message));
+            var sender_id = messagingEvent.sender.id;
+
+            if (messagingEvent.message) {
+
+                var text;
+
+                if (messagingEvent.message.quick_reply) {
+                    let qrPayload = messagingEvent.message.quick_reply.payload;
+                    console.log("Quick reply received");
+
+                    messenger.processPostback(sender_id, qrPayload);
+
+                    return;
+                } else if (messagingEvent.message.text) {
+                    console.log('text received');
+                    console.log(messagingEvent.message.text);
+                    text = messagingEvent.message.text;
+                } else if (messagingEvent.message.attachments) {
+                    console.log('attachment received');
+                    console.log(messagingEvent.message.attachments);
+                    var attachment = messagingEvent.message.attachments;
+                    if(attachment[0].type == 'location') {
+                        // Don't change formatting!! LOC:PlaceName/lat/long
+                        text = "LOC:" + attachment[0].title + "/" + attachment[0].payload.coordinates.lat + "/" + attachment[0].payload.coordinates.long;
+                    } else {
+                        text = attachment[0].payload.url;
+                    }
+                }
+
+                console.log("Receive a message: " + text);
+
+                // check if user is continuing a conversation or if this is a new one.
+                messenger.processReply(sender_id, text);
+
+                callback(null, "Done");
+            }
+
+            if(messagingEvent.postback && messagingEvent.postback.payload) {
+                var payload = messagingEvent.postback.payload;
+                console.log("Payload received! " + payload);
+
+                messenger.processPostback(sender_id, payload);
+            }
+        }
+
+        callback(null, event);
+    }
+};

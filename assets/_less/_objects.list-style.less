@@ -1,0 +1,32 @@
+// main: main.less
+
+ul {
+
+    &.modal-list {
+        li {
+            margin-left: 30px;
+        }
+    }
+
+    &.srp-list {
+        padding-left: 0;
+        list-style: none;
+
+        li {
+            font-size: 1.4em;
+            color: @black;
+            position: relative;
+            margin-bottom: 10px;
+
+            i {
+                color: @yellow;
+                -ms-transform: rotate(45deg); /* IE 9 */
+                -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+                transform: rotate(45deg);
+                position: absolute;
+                left: -30px;
+                top: 3px;
+            }
+        }
+    }
+}

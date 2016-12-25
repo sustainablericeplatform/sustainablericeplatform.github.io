@@ -1,0 +1,120 @@
+---
+layout: default
+---
+
+<section class="membership-application">
+    <div class="container">
+        <div class="heading-container">
+            <div class="header">
+                <img src="/assets/images/header-icon.png" alt="">
+                <h1>MEMBERSHIP APPLICATION</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <!-- <div class="welcome-intro">
+                    <h1 class="smaller green light">JOIN A GLOBAL COMMUNITY FOR</h1>
+                    <h1 class="bigger yellow light">RICE SUSTAINABILITY!</h1>
+                </div> -->
+                <h1 class="yellow">Get involved now!</h1>
+                <p>As a global multi-stakeholder initiative, the SRP welcomes institutions from the public and private sectors, international agencies and development partners, research institutes, non-profits and producer groups.</p>
+                <p>Today, the SRP has expanded to include over 50 institutional members spanning a wide range of actors both within and outside the value chain.</p>
+                <p>To fulfill our mission and achieve our goal, we seek the active participation of the public and private sectors, as well as the NGO community to be one with us in this working towards a sustainable future. </p>
+                <p>For membership application, please submit a completed <em class="green">membership application form</em> to <em class="green">secretariat@sustainablerice.org</em></p>
+                <div class="row margin top">
+                    <div class="col-md-8 col-md-offset-2">
+                        <button class="btn btn-primary btn-lg btn-block">Membership Application Form <i class="fa fa-download fa-lg" style="margin-left: 10px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="commitments-benefits" id="commitments-benefits">
+    <div class="container">
+        <div class="heading-container">
+            <div class="header">
+                <img src="/assets/images/header-icon.png" alt="">
+                <h1 class="white">COMMITMENTS AND BENEFITS</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <p class="white">The SRP invites institutions to be part of a global alliance for a sustainable rice for all.</p>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4 col-sm-offset-2 icon-container">
+                        <img src="/assets/images/commitment-icon.png" alt="" data-toggle="modal" data-target="#commitments">
+                        <p class="yellow" data-toggle="modal" data-target="#commitments">COMMITMENTS</p>
+                    </div>
+                    <div class="col-xs-6 col-sm-4 icon-container">
+                        <img src="/assets/images/benefit-icon.png" alt="" data-toggle="modal" data-target="#benefits">
+                        <p class="yellow" data-toggle="modal" data-target="#benefits">BENEFITS</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="members-list" id="members-list">
+    <div class="container" style="text-align: center;">
+        <div class="heading-container">
+            <div class="header">
+                <img src="/assets/images/header-icon.png" alt="">
+                <h1>MEMBERS</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="text-container">
+                    <p>The Sustainable Rice Platform (SRP) is a global multi-stakeholder initiative to promote resource efficiency and sustainability in the global rice sector through an alliance that links research, production, policy making, trade and consumption.</p>
+                    <p>Today, the SRP has expanded to include over 60 institutional members from the public and private sectors, international agencies and development partners, research institutes, non-profits and producer groups.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <p>Please see attached list:</p>
+                <div class="button-container">
+                    <button class="btn btn-primary btn-lg">List of members <i class="fa fa-download fa-lg" style="margin-left: 10px"></i></button>
+                </div>
+                {% include members-list.html %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modals -->
+<div class="modal fade" id="commitments" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h1 class="green">SRP members commit themselves to:</h1>
+                <ul class="srp-list modal-list">
+                    <li><i class="fa fa-square"></i>Support the mission, objectives, and activities of the SRP;</li>
+                    <li><i class="fa fa-square"></i>Contribute financially and/or in kind according to their resources and institutional capacity;</li>
+                    <li><i class="fa fa-square"></i>Develop and implement within their own organizations plans of action to support the SRP’s mission and objectives;</li>
+                    <li><i class="fa fa-square"></i>Actively and constructively communicate and support the SRP’s process and implementation of projects, while adhering to SRP visibility guidelines;</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="benefits" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h1 class="green">An SRP institutional member can:</h1>
+                <ul class="srp-list modal-list">
+                    <li><i class="fa fa-square"></i>Play a leadership role in addressing a critical global challenge</li>
+                    <li><i class="fa fa-square"></i>Access innovative tools and partnerships</li>
+                    <li><i class="fa fa-square"></i>Leverage the outcomes of collaborative research</li>
+                    <li><i class="fa fa-square"></i>Align their organizational sustainability commitment with farmer needs</li>
+                    <li><i class="fa fa-square"></i>Contribute to the UN Sustainable Development Goals</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modals -->

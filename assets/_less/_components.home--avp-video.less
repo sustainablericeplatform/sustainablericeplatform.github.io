@@ -1,0 +1,28 @@
+// main: main.less
+
+.avp-video {
+    background-image: url('/assets/images/avp-video-overlay-bg.jpg');
+    background-size: cover;
+    display: table;
+    min-height: 500px;
+    width: 100%;
+
+    @media screen and (min-width: @screen-md-min) {
+        min-height: 100vh;
+    }
+
+    .play-button-container {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+
+        i {
+            font-size: 7em;
+            cursor: pointer;
+        }
+
+        .video-embed {
+            background-color: @black;
+        }
+    }
+}

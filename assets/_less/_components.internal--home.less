@@ -1,0 +1,63 @@
+// main: main.less
+
+.welcome-internal {
+    background-image: url('/assets/images/honeycomb-internal-home-1.png'), url('/assets/images/honeycomb-internal-home-2.png');
+    background-position: left top, bottom right;
+    background-size: 30%, 10%;
+    background-repeat: no-repeat;
+
+}
+
+.upcoming-activities {
+    padding: @padding-base*2 0;
+    background-color: @light-green;
+}
+
+.featured-members {
+    background-color: @white;
+
+    .projects-list-wrap {
+        margin-top: @margin-base;
+
+        h1, h2 {
+            color: @green;
+        }
+    }
+}
+
+.funding-opportunities {
+    background-image: url('/assets/images/honeycomb-internal-home-3.png'), url('/assets/images/honeycomb-internal-home-4.png');
+    background-position: left center, bottom right;
+    background-size: 15%, 25%;
+    background-repeat: no-repeat;
+
+    .funding-opportunities-list-wrap {
+        margin-top: @margin-base;
+    }
+
+    .funding-opportunities-item {
+        border-bottom: 2px dotted #c7c7c7;
+        margin-bottom: @margin-base;
+        padding-bottom: @padding-base;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+
+        img {
+            margin-top: @margin-base;
+        }
+
+        .funder-name {
+            color: @yellow;
+        }
+
+        .deadline {
+            color: @red;
+        }
+
+        h2 {
+            color: @green;
+        }
+    }
+}

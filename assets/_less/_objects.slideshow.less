@@ -1,0 +1,62 @@
+// main: main.less
+
+.slick--before-content(@bg-color) {
+    button {
+        -ms-transform: rotate(45deg); /* IE 9 */
+        -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+        transform: rotate(45deg);
+
+        &:before {
+            content: "";
+            background-color: @bg-color;
+            opacity: 1;
+            border: 1px solid @bg-color;
+            border-radius: 4px;
+        }
+    }
+}
+
+.slideshow {
+    position: relative;
+    img {
+        width: 100%;
+    }
+
+    .text-wrapper {
+        position: absolute;
+        bottom: 75px;
+        margin-left: 50px;
+        max-width: 500px;
+        padding: 0 15px;
+        background-color: rgba(0, 0, 0, 0.4);
+
+        p {
+            color: @white;
+        }
+    }
+
+    .slick-dots {
+        bottom: 25px;
+
+        li {
+            .slick--before-content(@white);
+            margin: 0 12px;
+
+            &.slick-active {
+                .slick--before-content(@green);
+            }
+        }
+    }
+
+    &.local-action-ss {
+        .slick-dots {
+            bottom: auto;
+
+            li {
+                &.slick-active {
+                    .slick--before-content(@yellow);
+                }
+            }
+        }
+    }
+}

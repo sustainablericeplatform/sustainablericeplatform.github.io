@@ -1,0 +1,58 @@
+// main: main.less
+
+.home {
+    background-image: url('/assets/images/honeycomb-home-1.png'), url('/assets/images/honeycomb-home-2.png');
+    background-size: 45%, 25%;
+    background-position: top left, bottom right;
+    background-repeat: no-repeat, no-repeat;
+
+    .logo-container {
+        img {
+            max-width: 50px;
+            margin: 0 10px;
+        }
+    }
+
+    .member-login-wrap {
+        p {
+            text-align: justify;
+        }
+    }
+
+    .form-wrapper {
+        background-color: @green;
+        padding: @padding-base;
+        border-radius: @border-radius;
+        margin-top: @margin-base;
+
+        label {
+            color: @white;
+            text-align: right;
+        }
+    }
+
+    .avp-introduction-wrapper {
+        margin-top: @margin-base*2;
+
+        p {
+            text-align: center;
+            margin-bottom: 0;
+        }
+    }
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 35px;
+    height: 0;
+    overflow: hidden;
+
+    iframe {
+        position: absolute;
+        top:0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}

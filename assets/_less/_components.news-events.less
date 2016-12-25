@@ -1,0 +1,71 @@
+// main: main.less
+
+.news-events {
+    background-image: url('/assets/images/honeycomb-news-events-1.png'), url('/assets/images/honeycomb-news-events-2.png');
+    background-position: top left, center right;
+    background-size: 15%, 18%;
+    background-repeat: no-repeat, no-repeat;
+    @font-size: 18px;
+
+    h1 {
+        &.year {
+            font-family: 'bebas';
+            font-size: 40px;
+            color: @yellow;
+            margin: 0;
+            line-height: 1;
+        }
+    }
+
+    p {
+        &.description {
+            margin: 0;
+            font-size: @font-size;
+        }
+    }
+
+    .panel {
+        .panel-body {
+
+            .item-separator {
+                margin-bottom: @margin-base;
+
+                .img-container {
+                    margin-top: @margin-base;
+                    text-align: center;
+                }
+            }
+
+            ul {
+                padding-left: 35px;
+
+                li {
+                    color: @black;
+                    font-size: @font-size;
+                }
+            }
+
+            .external-links-container {
+                ul {
+                    padding-left: 0px;
+                    margin-left: -5px;
+                    list-style: none;
+
+                    li {
+                        float: left;
+                        margin: 0 15px;
+
+                        a {
+                            color: @black;
+                        }
+
+                        img {
+                            max-width: 40px;
+                            margin-right: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

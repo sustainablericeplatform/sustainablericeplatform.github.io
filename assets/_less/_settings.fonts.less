@@ -1,0 +1,55 @@
+// main: main.less
+
+@font-size-base: 12px;
+
+
+
+@font-face {
+	font-family: 'museo-slab';
+	src: url('/assets/fonts/Museo_Slab_500.otf');
+}
+
+@font-face {
+	font-family: 'bebas';
+	src: url('/assets/fonts/BebasNeue_Book.otf');
+}
+
+body {
+	font-size: @font-size-base;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+input,
+label,
+address,
+button.btn,
+li,
+a {
+    font-family: 'museo-slab', serif;
+
+    &.light {
+        font-family: 'Roboto', sans-serif;
+    }
+}
+
+h2 {
+	font-size: 1.8em;
+}
+
+p {
+	color: @black;
+	font-size: 1.4em;
+
+	>small {
+		font-size: 14px;
+	}
+}
+
+label {
+	font-size: 1.4em;
+}

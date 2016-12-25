@@ -1,0 +1,46 @@
+<div class="members-list-wrapper margin top">
+    <div class="row">
+        <div class="col-sm-4">
+            <ul class="member-list">
+                {% for member in site.data.srp_members_list_1 %}
+                    <li>
+                        <a href="#" class="company-title"><i class="fa fa-chevron-circle-down fa-lg"></i>  {{ member.company_name }}</a>
+                        <div class="company-details-wrap hidden">
+                            <h3 class="no-margin top">{{ member.country }}</h3>
+                            <p>{{ member.description }}</p>
+                            <a href="{{ member.site_url }}" target="_blank">{{ member.site_url }}</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <ul class="member-list">
+                {% for member in site.data.srp_members_list_2 %}
+                    <li>
+                        <a href="#" class="company-title"><i class="fa fa-chevron-circle-down fa-lg"></i>  {{ member.company_name }}</a>
+                        <div class="company-details-wrap hidden">
+                            <h3 class="no-margin top">{{ member.country }}</h3>
+                            <p>{{ member.description }}</p>
+                            <a href="{{ member.site_url }}" target="_blank">{{ member.site_url }}</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <ul class="member-list">
+                {% for member in site.data.srp_members_list_3 %}
+                    <li>
+                        <a href="#" class="company-title"><i class="fa fa-chevron-circle-down fa-lg"></i>  {{ member.company_name }}</a>
+                        <div class="company-details-wrap hidden">
+                            <h3 class="no-margin top">{{ member.country }}</h3>
+                            <p>{{ member.description }}</p>
+                            <a href="{{ member.site_url }}" target="_blank">{{ member.site_url }}</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

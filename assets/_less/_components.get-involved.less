@@ -1,0 +1,97 @@
+// main: main.less
+
+.membership-application {
+    background-image: url('/assets/images/honeycomb-get-involved-1.png'), url('/assets/images/honeycomb-get-involved-2.png');
+    background-position: top left, bottom right;
+    background-size: 18%, 12%;
+    background-repeat: no-repeat, no-repeat;
+
+    .welcome-intro {
+        h1 {
+            font-family: 'bebas';
+            line-height: 1;
+            text-align: center;
+
+            &.smaller {
+                font-size: 80px;
+                margin-bottom: 0;
+            }
+
+            &.bigger {
+                font-size: 120px;
+                margin: 0;
+            }
+        }
+    }
+
+    p {
+        text-align: justify;
+    }
+}
+
+.commitments-benefits {
+    background-image: url('/assets/images/get-involved-bg-1.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    p {
+        text-align: center;
+    }
+
+    .icon-container {
+        text-align: center;
+    }
+}
+
+.members-list {
+    background-image: url('/assets/images/honeycomb-get-involved-3.png'), url('/assets/images/honeycomb-get-involved-4.png');
+    background-size: 30%, 30%;
+    background-position: top left, right top;
+    background-repeat: no-repeat, no-repeat;
+}
+
+.members-list-wrapper {
+
+    .member-list {
+        list-style: none;
+
+        li {
+            padding: 5px;
+            text-align: left;
+            padding-left: 25px;
+            position: relative;
+
+            a.company-title {
+                font-size: 1.1em;
+                color: @black;
+
+                i {
+                    position: absolute;
+                    left: 0;
+                    top: 8px;
+                }
+            }
+
+            .company-details-wrap {
+                padding-top: 15px;
+
+                &.hidden {
+                    display: none;
+                }
+
+                a {
+
+                }
+
+                h3 {
+                    font-size: 1.2em;
+                }
+
+                p {
+                    font-size: 1.1em;
+                }
+            }
+        }
+
+    }
+}
