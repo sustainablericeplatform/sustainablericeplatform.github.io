@@ -10,7 +10,7 @@ layout: default
                     <img src="/assets/images/irri_logo.jpg" alt="">
                     <img src="/assets/images/unep_logo.png" alt="">
                 </div>
-                <p>Rice plays a critical role in global food and nutritional security, as well as in providing livelihoods for 144 million smallholder farmers in developing countries.</p>
+                <p>Test Rice plays a critical role in global food and nutritional security, as well as in providing livelihoods for 144 million smallholder farmers in developing countries.</p>
                 <h2 class="green">The Challenge</h2>
                 <p>Global demand for rice is expected to grow significantly by 2050; however, with lagging growth in supply, the world will face 44% production shortfall by 2050. How can we address the global challenge to boost production on existing rice lands, while protecting the environment, mitigating climate change impacts and safeguarding smallholder livelihoods?</p>
                 <h2 class="green">Our Work</h2>
