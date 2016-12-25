@@ -10,5 +10,5 @@ $(document).ready(function() {
         event.preventDefault();
 
         $(this).closest('li').find('.company-details-wrap').toggleClass('hidden');
-    })
+    });
 });

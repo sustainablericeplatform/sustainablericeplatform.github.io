@@ -13,7 +13,7 @@
         display: table-cell;
         vertical-align: middle;
     }
-    
+
     .heading-container {
         margin-bottom: @margin-base;
     }
@@ -26,4 +26,25 @@
             max-width: 140px;
         }
     }
+
+    .well {
+        background-color: fadeout(#000, 50%);
+        border: 2px solid fadeout(lighten(@red, 5%), 70%);
+        border-radius: 10px;
+        background-image: none;
+        text-align: center;
+
+        p {
+            margin: 5px 0;
+
+            &.red {
+                color: lighten(@red, 5%) !important;
+            }
+        }
+    }
+}
+
+#login-failed,
+#wrong-username-password {
+    display: none;
 }
