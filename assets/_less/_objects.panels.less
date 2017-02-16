@@ -8,6 +8,26 @@
         text-align: center;
         margin-top: 55px;
 
+        &.members {
+            margin-top: 0;
+            
+            p {
+                &.description {
+                    font-size: 1.1em;
+                }
+            }
+
+            .panel-body {
+                .external-links-container {
+                    ul {
+                        li {
+                            font-size: 1.1em;
+                        }
+                    }
+                }
+            }
+        }
+
         .panel-heading {
             display: inline-block;
             position: absolute;
@@ -30,6 +50,14 @@
                 font-size: 40px;
                 color: @yellow;
                 margin: 0;
+                line-height: 1;
+            }
+        }
+
+        h2 {
+            &.year {
+                color: @yellow;
+                margin-top: 0;
                 line-height: 1;
             }
         }

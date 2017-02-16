@@ -2,7 +2,8 @@ $(document).ready(function() {
     $('.slideshow').slick({
         autoplay: true,
         arrows: false,
-        dots: true
+        dots: true,
+        speed: 1000,
     });
 
     // Get Involved section
