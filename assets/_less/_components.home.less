@@ -1,10 +1,13 @@
 // main: main.less
 
 .home {
-    background-image: url('/assets/images/honeycomb-home-1.png'), url('/assets/images/honeycomb-home-2.png');
-    background-size: 45%, 25%;
-    background-position: top left, bottom right;
-    background-repeat: no-repeat, no-repeat;
+
+    @media screen and (min-width: @screen-md-min) {
+        background-image: url('/assets/images/honeycomb-home-1.png'), url('/assets/images/honeycomb-home-2.png');
+        background-size: 45%, 25%;
+        background-position: top left, bottom right;
+        background-repeat: no-repeat, no-repeat;
+    }
 
     .logo-container {
         img {

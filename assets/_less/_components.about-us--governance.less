@@ -19,6 +19,21 @@
                 float: left;
                 margin-right: 15px;
             }
+
+            p {
+                @media screen and (min-width: @screen-sm-min) {
+                    margin: 45px 0;
+                }
+            }
+
+            @media screen and (max-width: @screen-xs-max) {
+                text-align: center;
+
+                img {
+                    float: none;
+                    margin-right: 0;
+                }
+            }
         }
     }
 }

@@ -26,7 +26,10 @@
     .mission-goal-wrap {
         display: table;
         width: 100%;
-        padding: 75px 0;
+
+        @media screen and (min-width: @screen-sm-min) {
+            padding: 75px 0;
+        }
 
         .mission-goal-content {
             display: table-cell;
@@ -34,8 +37,15 @@
             width: 50%;
             padding: @padding-base 50px;
 
-            &:first-of-type {
-                border-right: 3px solid @white;
+            @media screen and (max-width: @screen-xs-max) {
+                width: 100%;
+                display: block;
+            }
+
+            @media screen and (min-width: @screen-sm-min) {
+                &:first-of-type {
+                    border-right: 3px solid @white;
+                }
             }
 
             p {

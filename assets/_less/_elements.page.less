@@ -1,17 +1,19 @@
 // main: main.less
-html {
-    background-color: lighten(@cream, 5%);
-}
 
 body {
     background-color: @cream;
-    width: 1300px;
-    margin: 0 auto;
+    // width: 1300px;
+    // margin: 0 auto;
 }
 
 section,
 .section {
+
     padding: 50px 0;
+
+    @media screen and (max-width: @screen-xs-max) {
+        padding: 75px 0;
+    }
 }
 
 [data-toggle="modal"] {

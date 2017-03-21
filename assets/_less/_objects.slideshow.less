@@ -18,6 +18,15 @@
 
 .slideshow {
     position: relative;
+
+    @media screen and (max-width: @screen-xs-max) {
+        display: none;
+        
+        &.slick-slider {
+            display: none;
+        }
+    }
+
     img {
         width: 100%;
     }
