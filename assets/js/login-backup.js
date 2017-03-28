@@ -75,7 +75,13 @@ $(document).ready(function() {
              (uname == 'srp_veco' && pword == 'rice0065&') ||
              (uname == 'srp_westmill' && pword == 'rice0066&') ||
              (uname == 'srp_wcskh' && pword == 'rice0067&') ||
-             (uname == 'srp_wwfpk' && pword == 'rice0068&') ) {
+             (uname == 'srp_wwfpk' && pword == 'rice0068&') ||
+             (uname == 'srp_nrsp' && pword == 'rice0069&') ||
+             (uname == 'srp_sunrice' && pword == 'rice0070&') ||
+             (uname == 'srp_globgap' && pword == 'rice0071*') ||
+             (uname == 'srp_frm' && pword == 'rice001') ||
+             (uname == 'srp_npm' && pword == 'rice001') ||
+             (uname == 'srp_gov' && pword == 'rice001') ||) {
             Cookies.set('srp_login', 'true', {
                 expires: 1
             });
