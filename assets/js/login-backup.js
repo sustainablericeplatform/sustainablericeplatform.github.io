@@ -81,7 +81,11 @@ $(document).ready(function() {
              (uname == 'srp_globgap' && pword == 'rice0071*') ||
              (uname == 'srp_frm' && pword == 'rice001') ||
              (uname == 'srp_npm' && pword == 'rice001') ||
-             (uname == 'srp_gov' && pword == 'rice001') ||) {
+             (uname == 'srp_gov' && pword == 'rice001') ||
+             (uname == 'srp_ac' && pword == 'rice001') ||
+             (uname == 'srp_wg' && pword == 'rice001') ||
+             (uname == 'srp_nwg' && pword == 'rice001') ||
+             (uname == 'srp_secretariat' && pword == 'riceisgood1') ) {
             Cookies.set('srp_login', 'true', {
                 expires: 1
             });
