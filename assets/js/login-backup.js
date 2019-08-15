@@ -13,7 +13,6 @@ $(document).ready(function() {
              (uname == 'srp_aidenv' && pword == 'rice0003!') ||
              (uname == 'srp_akc' && pword == 'rice0004!') ||
              (uname == 'srp_amru' && pword == 'rice0005!') ||
-             (uname == 'srp_basf' && pword == 'rice0006!') ||
              (uname == 'srp_brico' && pword == 'rice0007!') ||
              (uname == 'srp_bayer' && pword == 'rice0008!') ||
              (uname == 'srp_betgrn' && pword == 'rice0009!') ||
